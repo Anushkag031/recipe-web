@@ -13,17 +13,32 @@ const Popular = () => {
 
     const getPopular =async() =>{
 
-        const api =await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${process.env.REACT_APP_API_KEY}&number=9`)
+        // storing item in local storage
+// in the local storage we can only save strings
+        const check = localStorage.getItem('popular');
 
-        const data=await api.json();
-        setPopular(data.recipes);
+        if(check){
+            //parsing back, string to array
+            setPopular(JSON.parse(check)); 
+        }
+        else{
+             //fetching api data
+            const api =await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${process.env.REACT_APP_API_KEY}&number=9`)
 
-        console.log(data.recipes);
+            const data=await api.json();
+
+//converting it to string and saving it
+            localStorage.setItem('popular', JSON.stringify(data.recipes));
+
+            setPopular(data.recipes);
+    
+            console.log(data.recipes);
+
+        }
+       
     }
   return (
-    <div>
-     
-            return(
+    <div> 
                 <Wrapper >
                     <h3>Trending Picks</h3>
                     <Splide options={{
@@ -35,17 +50,18 @@ const Popular = () => {
                     }}>
                     {popular.map((recipe) => {
                         return(
-                            <SplideSlide>
+                            <SplideSlide key={recipe.id}>
                             <Card>
                                 <p>{recipe.title}</p>
                                 <img src={recipe.image} alt={recipe.title} />
+                                <Gradient/>
                             </Card>
                             </SplideSlide>
                         )
                     } )};
                     </Splide>
                 </Wrapper>
-            )
+            
 
     </div>
   )
@@ -88,8 +104,11 @@ p{
 `
 
 const Gradient = styled.div`
-z-index:3;
+z-index:-4;
 position: absolute;
+width: 100%;
+height: 100%;
+background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0));
 
 `
 
